@@ -2,9 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/productModel');
 
-// Add Product
 router.post('/addProduct', async (req, res) => {
-  const { name, price, salePrice, brand, size, stock } = req.body;
+  const { name, price, salePrice, brand, size,image, stock } = req.body;
 
   try {
     const newProduct = new Product({
@@ -13,6 +12,7 @@ router.post('/addProduct', async (req, res) => {
       price,
       salePrice,
       size,
+      image,
       stock
     });
 
@@ -33,13 +33,13 @@ router.get('/all', async (req, res) => {
 // Edit Product
 router.put('/editProduct/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, price, salePrice, brand, size, stock } = req.body;
+  const { name, price, salePrice, brand, size,image, stock } = req.body;
 
   try {
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
       { name, price, salePrice, brand, size, stock },
-      { new: true, runValidators: true } // Return the updated document and run validators
+      { new: true, runValidators: true } 
     );
 
     if (!updatedProduct) {
@@ -53,7 +53,7 @@ router.put('/editProduct/:id', async (req, res) => {
 });
 
 router.delete('/deleteProduct/:id', async (req, res) => {
-  const { id } = req.params; // Get the product ID from the URL
+  const { id } = req.params; 
 
   try {
     const deletedProduct = await Product.findByIdAndDelete(id);
@@ -65,6 +65,16 @@ router.delete('/deleteProduct/:id', async (req, res) => {
     res.json({ message: 'Product deleted successfully', product: deletedProduct });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete product' });
+  }
+});
+
+router.delete('/deleteAll', async (req, res) => {
+  try {
+    const result = await Product.deleteMany({});
+
+    res.json({ message: 'All products deleted successfully', result });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete products' });
   }
 });
 
