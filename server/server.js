@@ -5,7 +5,7 @@ const dbConn = require('./config/db')
 const cors = require('cors');
 const productRoutes = require('./routes/productRoutes');
 const userRoutes = require ('./routes/userRoutes')
-
+const User = require('./models/userModels'); 
 dotenv.config();
 
 const app = express();
@@ -21,6 +21,21 @@ mongoose.connect(process.env.MONGO_URI)
 
 app.use('/api/users', userRoutes);
 
+
+app.get('/api/user-details', async (req, res) => {
+    try {
+      const userId = req.query.userId; 
+      const user = await User.findById(userId);
+      if (user) {
+        res.json(user);
+      } else {
+        res.status(404).json({ message: 'User not found' });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  });
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server running in : ${PORT}`)
